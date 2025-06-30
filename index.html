@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horas Pro - Versão Definitiva</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366F1; --primary-dark: #4F46E5;
+            --secondary-color: #4B5563; --success-color: #16A34A;
+            --danger-color: #DC2626; --info-color: #0EA5E9;
+            --bg-color: #F3F4F6; --card-bg-color: #FFFFFF;
+            --text-color: #1E293B; --text-light: #4A5568;
+            --border-color: #E5E7EB; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 0.75rem; --transition: all 0.2s ease-in-out;
+        }
+
+        body.dark-mode {
+            --bg-color: #111827; --card-bg-color: #1F2937;
+            --text-color: #F9FAFB; --text-light: #9CA3AF;
+            --border-color: #374151; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; transition: var(--transition); }
+
+        /* --- Estrutura Principal --- */
+        .sidebar { background-color: var(--card-bg-color); width: 260px; padding: 2rem; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: var(--transition); }
+        .main-content { flex-grow: 1; padding: 2rem; display: flex; flex-direction: column; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Componentes Comuns --- */
+        .sidebar-logo { display: flex; align-items: center; margin-bottom: 2rem; }
+        .sidebar-logo i { color: var(--primary-color); font-size: 1.75rem; margin-right: 0.75rem; }
+        .sidebar-logo span { font-size: 1.5rem; font-weight: 700; color: var(--text-color); }
+        .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-nav li a { display: flex; align-items: center; color: var(--text-light); padding: 0.75rem 1rem; text-decoration: none; border-radius: var(--border-radius); transition: var(--transition); margin-bottom: 0.5rem; }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active { background-color: var(--primary-color); color: var(--card-bg-color); }
+        .sidebar-nav li a i { margin-right: 0.75rem; font-size: 1rem; width: 20px; text-align: center; }
+        
+        header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
+        header h1 { font-size: 2rem; font-weight: 700; color: var(--text-color); }
+        .actions-container { display: flex; gap: 0.75rem; }
+        .card { background-color: var(--card-bg-color); border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; color: #FFF; border: none; padding: 0.75rem 1.25rem; font-size: 0.9rem; font-weight: 500; border-radius: var(--border-radius); cursor: pointer; transition: var(--transition); text-decoration: none; }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .btn i { font-size: 1rem; }
+        .btn-primary { background-color: var(--primary-color); } .btn-primary:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); } .btn-danger { background-color: var(--danger-color); } .btn-info { background-color: var(--info-color); }
+        
+        /* --- Estilos específicos das páginas --- */
+        /* Dashboard */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .stat-card { background-color: var(--card-bg-color); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .stat-card-title { font-size: 0.9rem; font-weight: 500; color: var(--text-light); margin-bottom: 0.5rem; }
+        .stat-card-value { font-size: 2rem; font-weight: 700; color: var(--text-color); }
+        .chart-container { position: relative; height: 300px; }
+
+        /* Registros */
+        #registro-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: flex-end; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 0.875rem; font-weight: 500; color: var(--text-light); margin-bottom: 0.5rem; }
+        .form-group input { background-color: var(--bg-color); color: var(--text-color); width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem; transition: var(--transition); }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); background-color: var(--card-bg-color); }
+        .form-group.full-width { grid-column: 1 / -1; }
+        
+        /* Relatórios */
+        .report-filters { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+        #report-summary { margin-top: 1.5rem; }
+
+        /* Configurações */
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .setting-item:last-child { border-bottom: none; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Tabela genérica e outros */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; border-spacing: 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        th { font-weight: 600; color: var(--text-light); text-transform: uppercase; }
+        tbody tr:hover { background-color: rgba(0,0,0,0.02); }
+        body.dark-mode tbody tr:hover { background-color: rgba(255,255,255,0.02); }
+        
+        /* Notificações e estados */
+        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
+        #toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background-color: var(--text-color); color: var(--card-bg-color); padding: 1rem 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); opacity: 0; transform: translateY(-20px); animation: slideIn 0.3s ease-out forwards; }
+        .toast.success { background-color: var(--success-color); } .toast.error { background-color: var(--danger-color); }
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Adaptação para telas menores */
+        @media (max-width: 992px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); padding: 1rem; flex-direction: row; align-items: center; }
+            .sidebar-logo span { display: none; }
+            .sidebar-nav ul { display: flex; gap: 0.5rem; } .sidebar-nav li a span { display: none; }
+            .main-content { padding: 1.5rem; }
+        }
+
+        /* Classe temporária para forçar tema claro no PDF */
+        .pdf-export-fix { background-color: #FFFFFF !important; color: #1E293B !important; }
+        .pdf-export-fix th, .pdf-export-fix td, .pdf-export-fix div, .pdf-export-fix span, .pdf-export-fix h3 {
+            background-color: #FFFFFF !important;
+            color: #1E293B !important;
+        }
+        .pdf-export-fix .status-completo { background-color: #D1FAE5 !important; color: #16A34A !important;}
+        .pdf-export-fix .status-incompleto { background-color: #FEF3C7 !important; color: #D97706 !important;}
+        .pdf-export-fix .year-separator td { background-color: #4B5563 !important; color: #FFFFFF !important; }
+        .pdf-export-fix .month-separator td { background-color: #E5E7EB !important; color: #1E293B !important; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-stopwatch"></i>
+            <span>Horas Pro</span>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active" data-target="page-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a href="#" data-target="page-registros"><i class="fas fa-calendar-alt"></i><span>Registros</span></a></li>
+                <li><a href="#" data-target="page-relatorios"><i class="fas fa-chart-line"></i><span>Relatórios</span></a></li>
+                <li><a href="#" data-target="page-configuracoes"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div id="page-dashboard" class="page active">
+            <header><h1>Dashboard</h1></header>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-title">Total de Horas</div>
+                    <div class="stat-card-value" id="db-total-horas">0h 00min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Média Diária</div>
+                    <div class="stat-card-value" id="db-media-diaria">0h 00min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Dias Completos</div>
+                    <div class="stat-card-value" id="db-dias-completos">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Dias Incompletos</div>
+                    <div class="stat-card-value" id="db-dias-incompletos">0</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Horas por Mês</h3>
+                <div class="chart-container">
+                    <canvas id="horasMensaisChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Atividades Recentes</h3>
+                <div class="table-wrapper">
+                    <table id="recentes-tabela">
+                        <thead><tr><th>Data</th><th>Total Horas</th><th>Status</th></tr></thead>
+                        <tbody id="recentes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-registros" class="page">
+            <header>
+                <h1>Registros de Horas</h1>
+                <div class="actions-container">
+                     <button id="registros-pdf-btn" class="btn btn-danger"><i class="fas fa-file-pdf"></i>Exportar PDF</button>
+                </div>
+            </header>
+            <div class="card">
+                <form id="registro-form">
+                    <div class="form-group"><label for="data">Data</label><input type="date" id="data" required></div>
+                    <div class="form-group"><label for="chegada">Chegada</label><input type="time" id="chegada" required></div>
+                    <div class="form-group"><label for="saida-almoco">Saída Almoço</label><input type="time" id="saida-almoco" required></div>
+                    <div class="form-group"><label for="retorno-almoco">Retorno Almoço</label><input type="time" id="retorno-almoco" required></div>
+                    <div class="form-group"><label for="saida-final">Saída Final</label><input type="time" id="saida-final" required></div>
+                    <div class="form-group full-width"><label for="observacoes">Observações</label><input type="text" id="observacoes" placeholder="Ex: Compensação de horas..."></div>
+                    <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;"><i class="fas fa-plus"></i>Adicionar Registro</button>
+                </form>
+            </div>
+            <div class="card" id="card-registros">
+                <div class="empty-state" id="registros-empty-state"><h3>Nenhum registro encontrado.</h3></div>
+                <div class="table-wrapper">
+                    <table id="registros-tabela">
+                        <thead><tr><th>Data</th><th>Chegada</th><th>Saída</th><th>Retorno</th><th>Saída</th><th>Total</th><th>Status</th><th>Obs.</th><th></th></tr></thead>
+                        <tbody id="registros-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-relatorios" class="page">
+            <header><h1>Relatórios</h1></header>
+            <div class="card">
+                <h3>Filtrar Período</h3>
+                <div class="report-filters">
+                    <div class="form-group"><label for="report-start-date">Data de Início</label><input type="date" id="report-start-date"></div>
+                    <div class="form-group"><label for="report-end-date">Data de Fim</label><input type="date" id="report-end-date"></div>
+                    <button id="generate-report-btn" class="btn btn-primary"><i class="fas fa-filter"></i>Gerar</button>
+                    <button id="save-report-btn" class="btn btn-success"><i class="fas fa-save"></i>Salvar JSON do Relatório</button>
+                    <button id="pdf-report-btn" class="btn btn-danger"><i class="fas fa-file-pdf"></i>Exportar PDF do Relatório</button>
+                </div>
+                <div id="report-summary" class="stats-grid"></div>
+            </div>
+            <div class="card" id="card-relatorio">
+                 <div class="empty-state" id="report-empty-state"><h3>Gere um relatório para visualizar os dados.</h3></div>
+                <div class="table-wrapper">
+                    <table id="report-table">
+                         <thead><tr><th>Data</th><th>Chegada</th><th>Saída</th><th>Retorno</th><th>Saída</th><th>Total</th><th>Status</th><th>Obs.</th></tr></thead>
+                         <tbody id="report-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-configuracoes" class="page">
+            <header><h1>Configurações</h1></header>
+            <div class="card">
+                <div class="setting-item">
+                    <div>
+                        <h3>Meta de Horas Diárias</h3>
+                        <p>Defina o número de horas para um dia ser considerado "Completo".</p>
+                    </div>
+                    <input type="number" id="meta-horas-input" min="1" max="12" style="width: 80px; text-align: center; padding: 0.5rem;" class="form-group input">
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <h3>Modo Escuro (Dark Mode)</h3>
+                        <p>Alterne entre o tema claro e escuro.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <h3>Backup e Restauração</h3>
+                        <p>Salve todos os seus dados em um arquivo ou carregue de um backup.</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button id="config-save-btn" class="btn btn-success"><i class="fas fa-save"></i> Salvar Backup</button>
+                        <button id="config-load-btn" class="btn btn-info"><i class="fas fa-upload"></i> Carregar Backup</button>
+                        <input type="file" id="file-input" accept=".json" style="display: none;">
+                    </div>
+                </div>
+                <div class="setting-item">
+                     <div>
+                        <h3>Gerenciamento de Dados</h3>
+                        <p>Apague todos os seus registros de uma só vez (ação irreversível).</p>
+                    </div>
+                    <button id="config-delete-all-btn" class="btn btn-danger"><i class="fas fa-trash"></i> Apagar Tudo</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Estado da Aplicação ---
+    let registros = [];
+    let appSettings = { metaHoras: 6, darkMode: false };
+    let chartInstance = null;
+    
+    // --- Referências do DOM ---
+    const pages = document.querySelectorAll('.page');
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    const dataInput = document.getElementById('data');
+
+    // --- Funções de Inicialização e Persistência ---
+    const saveDataToLocalStorage = () => {
+        localStorage.setItem('horasProData', JSON.stringify(registros));
+    };
+
+    const loadDataFromLocalStorage = () => {
+        const savedData = localStorage.getItem('horasProData');
+        if (savedData) {
+            registros = JSON.parse(savedData);
+        }
+    };
+
+    const loadSettings = () => {
+        const savedSettings = JSON.parse(localStorage.getItem('horasProSettings'));
+        if (savedSettings) {
+            appSettings = savedSettings;
+        }
+        document.getElementById('meta-horas-input').value = appSettings.metaHoras;
+        document.getElementById('dark-mode-toggle').checked = appSettings.darkMode;
+        if (appSettings.darkMode) {
+            document.body.classList.add('dark-mode');
+        }
+    };
+
+    const saveSettings = () => {
+        localStorage.setItem('horasProSettings', JSON.stringify(appSettings));
+    };
+
+    // --- Funções de UI (Telas e Notificações) ---
+    const showToast = (message, type = 'success') => {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    };
+
+    const navigateToPage = (targetId) => {
+        pages.forEach(page => page.classList.remove('active'));
+        navLinks.forEach(link => link.classList.remove('active'));
+        
+        const targetPage = document.getElementById(targetId);
+        const targetLink = document.querySelector(`a[data-target="${targetId}"]`);
+        
+        if (targetPage) targetPage.classList.add('active');
+        if (targetLink) targetLink.classList.add('active');
+
+        if (targetId === 'page-dashboard') updateDashboard();
+    };
+
+    const updateAllViews = () => {
+        renderRegistrosTable();
+        updateDashboard();
+    };
+    
+    // --- Lógica de Cálculos ---
+    const calculateTotalMs = (reg) => {
+        if(!reg.chegada || !reg.saidaAlmoco || !reg.retornoAlmoco || !reg.saidaFinal) return 0;
+        const chegada = new Date(`1970-01-01T${reg.chegada}`);
+        const saidaAlmoco = new Date(`1970-01-01T${reg.saidaAlmoco}`);
+        const retornoAlmoco = new Date(`1970-01-01T${reg.retornoAlmoco}`);
+        const saidaFinal = new Date(`1970-01-01T${reg.saidaFinal}`);
+        let totalMs = (saidaAlmoco - chegada) + (saidaFinal - retornoAlmoco);
+        return totalMs < 0 ? 0 : totalMs;
+    };
+
+    const formatMsToHours = (ms) => {
+        const totalHoras = Math.floor(ms / 3600000);
+        const totalMinutos = Math.floor((ms % 3600000) / 60000);
+        return `${String(totalHoras).padStart(2, '0')}h ${String(totalMinutos).padStart(2, '0')}min`;
+    };
+
+    // --- Funções de Renderização por Página ---
+
+    function renderRegistrosTable() {
+        const tableBody = document.getElementById('registros-body');
+        const emptyState = document.getElementById('registros-empty-state');
+        const tableWrapper = document.querySelector('#page-registros .table-wrapper');
+        
+        tableBody.innerHTML = '';
+        if (registros.length === 0) {
+            emptyState.style.display = 'block';
+            tableWrapper.style.display = 'none';
+            return;
+        }
+        emptyState.style.display = 'none';
+        tableWrapper.style.display = 'block';
+
+        const sortedRegistros = [...registros].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+        sortedRegistros.forEach(reg => {
+            const row = tableBody.insertRow();
+            const totalMs = calculateTotalMs(reg);
+            const horasTrabalhadas = totalMs / 3600000;
+            const status = horasTrabalhadas >= appSettings.metaHoras ? 'Completo' : 'Incompleto';
+            const dataFormatada = new Intl.DateTimeFormat('pt-BR', {timeZone: 'UTC'}).format(new Date(reg.data));
+
+            row.innerHTML = `
+                <td>${dataFormatada}</td><td>${reg.chegada}</td><td>${reg.saidaAlmoco}</td>
+                <td>${reg.retornoAlmoco}</td><td>${reg.saidaFinal}</td><td>${formatMsToHours(totalMs)}</td>
+                <td><span class="status status-${status.toLowerCase()}">${status}</span></td><td>${reg.observacoes || ''}</td>
+                <td class="action-column"><button class="action-btn" data-id="${reg.id}" title="Excluir"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+        });
+    }
+
+    function updateDashboard() {
+        let totalMsGeral = 0;
+        let diasCompletos = 0;
+        let diasIncompletos = 0;
+        const horasPorMes = {};
+
+        registros.forEach(reg => {
+            const totalMs = calculateTotalMs(reg);
+            totalMsGeral += totalMs;
+            if (totalMs / 3600000 >= appSettings.metaHoras) {
+                diasCompletos++;
+            } else {
+                diasIncompletos++;
+            }
+
+            const data = new Date(reg.data);
+            const mesChave = `${data.getUTCFullYear()}-${String(data.getUTCMonth() + 1).padStart(2, '0')}`;
+            if (!horasPorMes[mesChave]) {
+                horasPorMes[mesChave] = 0;
+            }
+            horasPorMes[mesChave] += totalMs / 3600000;
+        });
+
+        const totalRegistros = registros.length;
+        const mediaDiariaMs = totalRegistros > 0 ? totalMsGeral / totalRegistros : 0;
+
+        document.getElementById('db-total-horas').textContent = formatMsToHours(totalMsGeral);
+        document.getElementById('db-media-diaria').textContent = formatMsToHours(mediaDiariaMs);
+        document.getElementById('db-dias-completos').textContent = diasCompletos;
+        document.getElementById('db-dias-incompletos').textContent = diasIncompletos;
+        
+        const recentesBody = document.getElementById('recentes-body');
+        recentesBody.innerHTML = '';
+        [...registros].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 5).forEach(reg => {
+             const row = recentesBody.insertRow();
+             const totalMs = calculateTotalMs(reg);
+             const status = totalMs / 3600000 >= appSettings.metaHoras ? 'Completo' : 'Incompleto';
+             row.innerHTML = `<td>${new Intl.DateTimeFormat('pt-BR', {timeZone: 'UTC'}).format(new Date(reg.data))}</td><td>${formatMsToHours(totalMs)}</td><td><span class="status status-${status.toLowerCase()}">${status}</span></td>`;
+        });
+
+        const sortedMeses = Object.keys(horasPorMes).sort();
+        const labels = sortedMeses.map(mes => new Date(mes+'-02').toLocaleString('pt-BR', {month: 'short', year: '2-digit'}));
+        const data = sortedMeses.map(mes => horasPorMes[mes].toFixed(2));
+
+        const ctx = document.getElementById('horasMensaisChart').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Horas Trabalhadas', data, backgroundColor: 'rgba(99, 102, 241, 0.6)', borderColor: 'rgba(99, 102, 241, 1)', borderWidth: 1 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function generateReport(startDate, endDate) {
+        const reportEmpty = document.getElementById('report-empty-state');
+        const reportWrapper = document.querySelector('#page-relatorios .table-wrapper');
+        const reportBody = document.getElementById('report-body');
+
+        const filteredRegistros = registros.filter(reg => {
+            const dataReg = new Date(reg.data);
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+            if (start) start.setUTCHours(0,0,0,0);
+            if (end) end.setUTCHours(23,59,59,999);
+            if (start && dataReg < start) return false;
+            if (end && dataReg > end) return false;
+            return true;
+        });
+        
+        reportBody.innerHTML = '';
+        if (filteredRegistros.length === 0) {
+            reportEmpty.style.display = 'block';
+            reportWrapper.style.display = 'none';
+            document.getElementById('report-summary').innerHTML = '';
+            showToast('Nenhum registro encontrado para este período.', 'error');
+            return null;
+        }
+        
+        reportEmpty.style.display = 'none';
+        reportWrapper.style.display = 'block';
+
+        let totalMsPeriodo = 0;
+        filteredRegistros.forEach(reg => {
+            const totalMs = calculateTotalMs(reg);
+            totalMsPeriodo += totalMs;
+            const status = totalMs / 3600000 >= appSettings.metaHoras ? 'Completo' : 'Incompleto';
+            const dataFormatada = new Intl.DateTimeFormat('pt-BR', {timeZone: 'UTC'}).format(new Date(reg.data));
+            const row = reportBody.insertRow();
+            row.innerHTML = `<td>${dataFormatada}</td><td>${reg.chegada}</td><td>${reg.saidaAlmoco}</td><td>${reg.retornoAlmoco}</td><td>${reg.saidaFinal}</td><td>${formatMsToHours(totalMs)}</td><td><span class="status status-${status.toLowerCase()}">${status}</span></td><td>${reg.observacoes || ''}</td>`;
+        });
+        
+        const mediaMs = totalMsPeriodo / filteredRegistros.length;
+        document.getElementById('report-summary').innerHTML = `
+            <div class="stat-card"><div class="stat-card-title">Total Horas (Período)</div><div class="stat-card-value">${formatMsToHours(totalMsPeriodo)}</div></div>
+            <div class="stat-card"><div class="stat-card-title">Dias Registrados</div><div class="stat-card-value">${filteredRegistros.length}</div></div>
+            <div class="stat-card"><div class="stat-card-title">Média Diária (Período)</div><div class="stat-card-value">${formatMsToHours(mediaMs)}</div></div>
+        `;
+        return filteredRegistros;
+    }
+    
+    // --- Event Listeners ---
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateToPage(link.dataset.target);
+        });
+    });
+
+    document.getElementById('registro-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const novoRegistro = { id: Date.now(), data: dataInput.value, chegada: document.getElementById('chegada').value, saidaAlmoco: document.getElementById('saida-almoco').value, retornoAlmoco: document.getElementById('retorno-almoco').value, saidaFinal: document.getElementById('saida-final').value, observacoes: document.getElementById('observacoes').value, };
+        registros.push(novoRegistro);
+        saveDataToLocalStorage();
+        updateAllViews();
+        document.getElementById('registro-form').reset();
+        dataInput.valueAsDate = new Date();
+        showToast('Registro adicionado com sucesso!');
+    });
+    
+    document.getElementById('registros-body').addEventListener('click', (e) => {
+        const btn = e.target.closest('.action-btn');
+        if (btn) {
+            const idParaExcluir = parseInt(btn.dataset.id, 10);
+            if (confirm('Tem certeza que deseja excluir este registro?')) {
+                registros = registros.filter(reg => reg.id !== idParaExcluir);
+                saveDataToLocalStorage();
+                updateAllViews();
+                showToast('Registro excluído.', 'error');
+            }
+        }
+    });
+
+    document.getElementById('generate-report-btn').addEventListener('click', () => {
+        const start = document.getElementById('report-start-date').value;
+        const end = document.getElementById('report-end-date').value;
+        generateReport(start, end);
+    });
+    
+    document.getElementById('meta-horas-input').addEventListener('change', (e) => {
+        appSettings.metaHoras = parseInt(e.target.value, 10);
+        saveSettings();
+        updateAllViews();
+        showToast('Meta de horas atualizada!');
+    });
+
+    document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
+        appSettings.darkMode = e.target.checked;
+        document.body.classList.toggle('dark-mode', appSettings.darkMode);
+        saveSettings();
+    });
+
+    document.getElementById('config-delete-all-btn').addEventListener('click', () => {
+        if (confirm('ATENÇÃO! ISSO APAGARÁ TODOS OS SEUS REGISTROS. ESTA AÇÃO É IRREVERSÍVEL. Deseja continuar?')) {
+            registros = [];
+            saveDataToLocalStorage(); // Limpa os dados salvos também
+            updateAllViews();
+            showToast('Todos os dados foram apagados.', 'error');
+        }
+    });
+    
+    const handleFileSave = (dataToSave, fileName) => {
+        if (dataToSave.length === 0) { showToast('Não há dados para salvar.', 'error'); return; }
+        const dataStr = JSON.stringify(dataToSave, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
+    };
+    
+    document.getElementById('config-save-btn').addEventListener('click', () => handleFileSave(registros, 'backup_registros_completo.json'));
+    document.getElementById('save-report-btn').addEventListener('click', () => {
+        const start = document.getElementById('report-start-date').value;
+        const end = document.getElementById('report-end-date').value;
+        const filteredData = generateReport(start, end);
+        if(filteredData) handleFileSave(filteredData, 'relatorio_horas.json');
+    });
+
+    const handleFileLoad = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (Array.isArray(data)) {
+                    registros = data;
+                    saveDataToLocalStorage(); // Salva os novos dados carregados
+                    updateAllViews();
+                    showToast(`${data.length} registros carregados com sucesso!`);
+                } else { showToast('Arquivo JSON inválido.', 'error'); }
+            } catch { showToast('Erro ao ler o arquivo.', 'error'); }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    };
+
+    document.getElementById('config-load-btn').addEventListener('click', () => document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', handleFileLoad);
+
+    const handlePdfExport = (elementId, fileName) => {
+        const element = document.getElementById(elementId);
+        const tableBody = element.querySelector('tbody');
+
+        if (!tableBody || tableBody.rows.length === 0) {
+            showToast('Não há dados na tabela para exportar.', 'error');
+            return;
+        }
+
+        element.classList.add('pdf-export-fix');
+        document.querySelectorAll('.action-column, .action-header').forEach(el => el.style.display = 'none');
+        
+        const options = { margin: 10, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
+        
+        html2pdf().set(options).from(element).save().finally(() => {
+             element.classList.remove('pdf-export-fix');
+             document.querySelectorAll('.action-column, .action-header').forEach(el => el.style.display = 'table-cell');
+        });
+    };
+
+    // CORREÇÃO: O botão na página de Registros foi removido para evitar confusão, centralizando backups em Configurações. Adicionando de volta conforme solicitado.
+    document.getElementById('registros-pdf-btn').addEventListener('click', () => handlePdfExport('card-registros', 'relatorio_completo.pdf'));
+    document.getElementById('pdf-report-btn').addEventListener('click', () => handlePdfExport('card-relatorio', 'relatorio_filtrado.pdf'));
+
+    // --- Inicialização da Aplicação ---
+    loadSettings();
+    loadDataFromLocalStorage();
+    updateAllViews();
+    navigateToPage('page-dashboard');
+    dataInput.valueAsDate = new Date();
+});
+</script>
+</body>
+</html>
