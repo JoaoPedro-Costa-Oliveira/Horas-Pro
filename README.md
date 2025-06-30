@@ -2,7 +2,8 @@
 
 Uma aplicação web completa e moderna para gerenciamento de horas de estágio, construída como um arquivo único HTML, CSS e JavaScript, sem a necessidade de backend ou dependências complexas.
 
-![Screenshot do Horas Pro](https://i.imgur.com/gK9fI5G.png)
+![Screensho![horas_pro](https://github.com/user-attachments/assets/74c2be18-128e-4b9f-ac5f-ddbb7cede0ee)
+t do Horas Pro]()
 *(Dica: Tire uma screenshot da sua aplicação e substitua o link acima para exibir sua própria imagem!)*
 
 ## 🚀 Principais Funcionalidades
