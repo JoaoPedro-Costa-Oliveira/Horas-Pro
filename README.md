@@ -56,17 +56,4 @@ O **Horas Pro** utiliza uma abordagem híbrida para garantir que você nunca per
 
 A exportação para PDF foi projetada para funcionar perfeitamente, independentemente de você estar usando o tema claro ou escuro. O código aplica um "tema de impressão" temporário antes de gerar o arquivo, garantindo que o PDF final seja sempre legível (texto preto sobre fundo branco).
 
-## 🚀 Bônus: Publicando seu App de Graça com o GitHub Pages
 
-Você pode hospedar esta aplicação na internet gratuitamente usando o GitHub Pages.
-
-1.  **Crie um repositório** no GitHub.
-2.  **Faça o upload** do arquivo `app_horas_final.html` para este repositório.
-3.  **Renomeie** o arquivo para `index.html`. Este passo é crucial.
-4.  No seu repositório, vá em **Settings > Pages**.
-5.  Na seção "Branch", selecione a branch `main` (ou `master`) e a pasta `/root`. Clique em **Save**.
-6.  Aguarde alguns minutos. Sua aplicação estará no ar no endereço: `https://SEU-USUARIO.github.io/NOME-DO-REPOSITORIO/`
-
-## ⚖️ Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
