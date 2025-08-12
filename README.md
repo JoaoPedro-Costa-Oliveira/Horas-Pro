@@ -61,7 +61,7 @@ Para usar esta versão em sua máquina, siga os passos abaixo:
 
 Uma versão original e mais simples deste projeto, que roda 100% no navegador usando `localStorage`, continua disponível para demonstração ao vivo e para quem busca uma solução "zero-instalação".
 
-➡️ **[Acessar o Demo Online (hospedado no Netlify)](https://horas-pro.netlify.app/)**
+➡️ **[Acessar o Demo Online (hospedado no Netlify)](https://horaspro.netlify.app/)**
 
 O código-fonte desta versão está preservado no ramo [`old-demo-js`](https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro/tree/old-demo-js).
 
