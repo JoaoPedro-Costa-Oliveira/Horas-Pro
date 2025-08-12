@@ -63,7 +63,7 @@ Uma versão original e mais simples deste projeto, que roda 100% no navegador us
 
 ➡️ **[Acessar o Demo Online (hospedado no Netlify)](https://horas-pro.netlify.app/)**
 
-O código-fonte desta versão está preservado no ramo [`ols-demo-js`](https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro/tree/javascript-puro).
+O código-fonte desta versão está preservado no ramo [`old-demo-js`](https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro/tree/javascript-puro).
 
 ### Funcionalidades da Versão JavaScript
 * **Tudo em um arquivo:** HTML, CSS e JS em um único local para máxima portabilidade.
