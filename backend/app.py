@@ -18,7 +18,6 @@ class RegistroHora(db.Model):
     saida_almoco = db.Column(db.String(5), nullable=True)
     retorno_almoco = db.Column(db.String(5), nullable=True)
     saida = db.Column(db.String(5), nullable=False)
-    # A coluna de observações não estava no modelo, vamos adicionar
     observacoes = db.Column(db.String(200), nullable=True)
 
 # CORREÇÃO IMPORTANTE: Função que converte o objeto Python para o formato que o JavaScript espera
@@ -37,7 +36,6 @@ def registro_to_dict(registro):
 @app.route('/api/registros', methods=['GET'])
 def get_registros():
     registros = RegistroHora.query.order_by(RegistroHora.data.desc()).all()
-    # Usa a nova função de conversão
     return jsonify([registro_to_dict(reg) for reg in registros])
 
 # Rota para adicionar um novo registro
@@ -48,7 +46,7 @@ def add_registro():
     # CORREÇÃO IMPORTANTE: Pega os dados com os nomes que o JavaScript envia
     novo_registro = RegistroHora(
         data=data.get('data'),
-        entrada=data.get('chegada'),        # O JS envia 'chegada', o DB salva como 'entrada'
+        entrada=data.get('chegada'),        
         saida_almoco=data.get('saidaAlmoco'),
         retorno_almoco=data.get('retornoAlmoco'),
         saida=data.get('saidaFinal'),
@@ -57,7 +55,6 @@ def add_registro():
     
     db.session.add(novo_registro)
     db.session.commit()
-    # Usa a nova função de conversão para devolver o objeto no formato correto
     return jsonify(registro_to_dict(novo_registro)), 201
 
 # Rota para deletar um registro específico
@@ -90,7 +87,6 @@ def serve(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
-# Adicione esta rota no seu app.py, junto com as outras rotas da API
 
 @app.route('/api/registros/batch', methods=['POST'])
 def batch_add_registros():
@@ -119,7 +115,7 @@ def batch_add_registros():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
-# Inicialização
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
