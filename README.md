@@ -1,7 +1,7 @@
 # Horas Pro - Controle de Horas de Estágio
 
 Uma aplicação web completa e moderna para gerenciamento de horas de estágio, construída como um arquivo único HTML, CSS e JavaScript, sem a necessidade de backend ou dependências complexas.
-
+➡️ **[Acessar o Demo Online (hospedado no Netlify)](https://horas-pro.netlify.app/)**
 <img width="1883" height="835" alt="horas_pro" src="https://github.com/user-attachments/assets/127e939d-746b-49d7-8295-5c01a6575f3c" />
 
 
