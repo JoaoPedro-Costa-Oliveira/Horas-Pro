@@ -1,10 +1,8 @@
-# Horas Pro - Controle de Horas de Estágio
+# Horas Pro (Versão Flask)
 
-Uma aplicação web completa e moderna para gerenciamento de horas de estágio, construída como um arquivo único HTML, CSS e JavaScript, sem a necessidade de backend ou dependências complexas.
+Uma aplicação web completa e moderna para gerenciamento de horas de estágio, construída com **Python** e **Flask**. Esta versão utiliza um banco de dados **SQLite** para persistência de dados, transformando o Horas Pro em uma solução robusta para ser executada localmente em sua máquina.
 
 <img width="1883" height="835" alt="horas_pro" src="https://github.com/user-attachments/assets/127e939d-746b-49d7-8295-5c01a6575f3c" />
-
-
 
 ## 🚀 Principais Funcionalidades
 
@@ -12,49 +10,62 @@ Uma aplicação web completa e moderna para gerenciamento de horas de estágio, 
 * **Registro Detalhado:** Adicione, edite e remova registros de horas com facilidade, incluindo entrada, almoço e saída.
 * **Relatórios com Filtro:** Gere relatórios detalhados para períodos específicos com apenas alguns cliques.
 * **Exportação Profissional:** Exporte seus relatórios completos ou filtrados para os formatos **PDF** e **JSON**.
-* **Persistência Automática:** Seus dados são salvos automaticamente no navegador. Feche a aba e continue de onde parou.
-* **Backup e Restauração:** Faça backups manuais em formato JSON para garantir a segurança dos seus dados ou para transferi-los entre computadores.
+* **Persistência de Dados Robusta:** Seus dados são salvos em um arquivo de banco de dados (`horas.db`) em sua máquina, garantindo segurança e privacidade.
 * **Configurações Personalizáveis:**
     * Defina sua própria meta de horas diárias.
     * Alterne para o **Modo Escuro (Dark Mode)** para maior conforto visual.
 * **Design Moderno e Responsivo:** A interface se adapta perfeitamente a desktops, tablets e celulares.
 
-## 🛠️ Como Foi Feito (Stack de Tecnologia)
+## 🛠️ Stack de Tecnologia
 
-Este projeto foi construído do zero, utilizando apenas tecnologias web front-end, tornando-o extremamente leve e portátil.
+Esta versão evoluiu para uma aplicação full-stack:
 
-* **Estrutura:** HTML5 semântico.
-* **Estilização:** CSS3 moderno, com:
-    * **Variáveis CSS** para fácil gerenciamento de temas (Claro e Escuro).
-    * **Flexbox** e **Grid Layout** para criar layouts complexos e responsivos.
-    * Animações e transições sutis para uma melhor experiência de usuário.
-* **Funcionalidade:** JavaScript (ES6+), sem frameworks, para manter o código leve e com total controle sobre o DOM.
+* **Backend:** Python 3, Flask, Flask-SQLAlchemy
+* **Banco de Dados:** SQLite
+* **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+* **Bibliotecas Externas:** Chart.js, html2pdf.js, Font Awesome
 
-### Bibliotecas Externas (via CDN)
+## ⚙️ Como Rodar (Versão Flask Local)
 
-* **Chart.js:** Para a criação dos gráficos interativos no Dashboard.
-* **html2pdf.js:** Para a funcionalidade de exportação de tabelas para o formato PDF.
-* **Font Awesome:** Para a utilização de ícones em toda a interface.
+Para usar esta versão em sua máquina, siga os passos abaixo:
 
-## ⚙️ Como Usar
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro.git](https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro.git)
+    cd Horas-Pro
+    ```
 
-A beleza deste projeto está na sua simplicidade.
+2.  **Crie e ative um ambiente virtual:**
+    ```bash
+    # No Windows
+    python -m venv venv
+    .\venv\Scripts\activate
 
-1.  Baixe o arquivo `app_horas_final.html`.
-2.  Abra este arquivo diretamente no seu navegador de internet preferido (Google Chrome, Firefox, Edge, etc.).
-3.  Pronto! A aplicação é totalmente funcional.
+    # No macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-## ✨ Funcionalidades em Detalhe
+3.  **Execute a aplicação:**
+    ```bash
+    python app.py
+    ```
+    *(O arquivo principal do Flask deve se chamar `app.py` e estar na raiz do projeto)*
 
-### Persistência de Dados Híbrida
+4.  **Acesse no navegador:**
+    Abra seu navegador e acesse 
 
-O **Horas Pro** utiliza uma abordagem híbrida para garantir que você nunca perca seus dados:
+---
 
-1.  **Salvamento Automático (`localStorage`):** Para o uso diário, a aplicação salva cada alteração (adição ou exclusão de registros) no armazenamento local do seu navegador. Isso garante que, ao fechar e abrir a aba, seus dados permaneçam intactos.
-2.  **Backup Manual (JSON):** Na aba de Configurações, você pode salvar um arquivo de backup (`.json`) em seu computador. Isso é ideal para criar pontos de restauração ou para migrar seus dados para outro navegador ou máquina.
+## ✨ Versão Legacy / Demo Online (JavaScript Puro)
 
-### Exportação de PDF Inteligente
+Uma versão original e mais simples deste projeto, que roda 100% no navegador usando `localStorage`, continua disponível para demonstração ao vivo e para quem busca uma solução "zero-instalação".
 
-A exportação para PDF foi projetada para funcionar perfeitamente, independentemente de você estar usando o tema claro ou escuro. O código aplica um "tema de impressão" temporário antes de gerar o arquivo, garantindo que o PDF final seja sempre legível (texto preto sobre fundo branco).
+➡️ **[Acessar o Demo Online (hospedado no Netlify)](https://horas-pro.netlify.app/)**
 
+O código-fonte desta versão está preservado no ramo [`ols-demo-js`](https://github.com/JoaoPedro-Costa-Oliveira/Horas-Pro/tree/javascript-puro).
 
+### Funcionalidades da Versão JavaScript
+* **Tudo em um arquivo:** HTML, CSS e JS em um único local para máxima portabilidade.
+* **Salvamento Automático no Navegador:** Utiliza `localStorage` para persistir os dados.
+* **Sem necessidade de servidor:** Basta abrir o arquivo HTML no navegador.
