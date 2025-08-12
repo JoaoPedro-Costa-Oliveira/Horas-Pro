@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horas Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-stopwatch"></i>
+            <span>Horas Pro</span>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active" data-target="page-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a href="#" data-target="page-registros"><i class="fas fa-calendar-alt"></i><span>Registros</span></a></li>
+                <li><a href="#" data-target="page-relatorios"><i class="fas fa-chart-line"></i><span>Relatórios</span></a></li>
+                <li><a href="#" data-target="page-configuracoes"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div id="page-dashboard" class="page active">
+            <header><h1>Dashboard</h1></header>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-title">Total de Horas</div>
+                    <div class="stat-card-value" id="db-total-horas">0h 00min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Média Diária</div>
+                    <div class="stat-card-value" id="db-media-diaria">0h 00min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Dias Completos</div>
+                    <div class="stat-card-value" id="db-dias-completos">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Dias Incompletos</div>
+                    <div class="stat-card-value" id="db-dias-incompletos">0</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Horas por Mês</h3>
+                <div class="chart-container">
+                    <canvas id="horasMensaisChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Atividades Recentes</h3>
+                <div class="table-wrapper">
+                    <table id="recentes-tabela">
+                        <thead><tr><th>Data</th><th>Total Horas</th><th>Status</th></tr></thead>
+                        <tbody id="recentes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-registros" class="page">
+            <header>
+                <h1>Registros de Horas</h1>
+                <div class="actions-container">
+                     <button id="registros-pdf-btn" class="btn btn-danger"><i class="fas fa-file-pdf"></i>Exportar PDF</button>
+                </div>
+            </header>
+            <div class="card">
+                <form id="registro-form">
+                    <div class="form-group"><label for="data">Data</label><input type="date" id="data" required></div>
+                    <div class="form-group"><label for="chegada">Chegada</label><input type="time" id="chegada" required></div>
+                    <div class="form-group"><label for="saida-almoco">Saída Almoço</label><input type="time" id="saida-almoco" required></div>
+                    <div class="form-group"><label for="retorno-almoco">Retorno Almoço</label><input type="time" id="retorno-almoco" required></div>
+                    <div class="form-group"><label for="saida-final">Saída Final</label><input type="time" id="saida-final" required></div>
+                    <div class="form-group full-width"><label for="observacoes">Observações</label><input type="text" id="observacoes" placeholder="Ex: Compensação de horas..."></div>
+                    <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;"><i class="fas fa-plus"></i>Adicionar Registro</button>
+                </form>
+            </div>
+            <div class="card" id="card-registros">
+                <div class="empty-state" id="registros-empty-state"><h3>Nenhum registro encontrado.</h3></div>
+                <div class="table-wrapper">
+                    <table id="registros-tabela">
+                        <thead><tr><th>Data</th><th>Chegada</th><th>Saída</th><th>Retorno</th><th>Saída</th><th>Total</th><th>Status</th><th>Obs.</th><th></th></tr></thead>
+                        <tbody id="registros-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-relatorios" class="page">
+            <header><h1>Relatórios</h1></header>
+            <div class="card">
+                <h3>Filtrar Período</h3>
+                <div class="report-filters">
+                    <div class="form-group"><label for="report-start-date">Data de Início</label><input type="date" id="report-start-date"></div>
+                    <div class="form-group"><label for="report-end-date">Data de Fim</label><input type="date" id="report-end-date"></div>
+                    <button id="generate-report-btn" class="btn btn-primary"><i class="fas fa-filter"></i>Gerar</button>
+                    <button id="save-report-btn" class="btn btn-success"><i class="fas fa-save"></i>Salvar JSON do Relatório</button>
+                    <button id="pdf-report-btn" class="btn btn-danger"><i class="fas fa-file-pdf"></i>Exportar PDF do Relatório</button>
+                </div>
+                <div id="report-summary" class="stats-grid"></div>
+            </div>
+            <div class="card" id="card-relatorio">
+                 <div class="empty-state" id="report-empty-state"><h3>Gere um relatório para visualizar os dados.</h3></div>
+                <div class="table-wrapper">
+                    <table id="report-table">
+                         <thead><tr><th>Data</th><th>Chegada</th><th>Saída</th><th>Retorno</th><th>Saída</th><th>Total</th><th>Status</th><th>Obs.</th></tr></thead>
+                         <tbody id="report-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-configuracoes" class="page">
+            <header><h1>Configurações</h1></header>
+            <div class="card">
+                <div class="setting-item">
+                    <div>
+                        <h3>Meta de Horas Diárias</h3>
+                        <p>Defina o número de horas para um dia ser considerado "Completo".</p>
+                    </div>
+                    <input type="number" id="meta-horas-input" min="1" max="12" style="width: 80px; text-align: center; padding: 0.5rem;" class="form-group input">
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <h3>Modo Escuro (Dark Mode)</h3>
+                        <p>Alterne entre o tema claro e escuro.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div>
+                        <h3>Backup e Restauração</h3>
+                        <p>Salve todos os seus dados em um arquivo ou carregue de um backup.</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button id="config-save-btn" class="btn btn-success"><i class="fas fa-save"></i> Salvar Backup</button>
+                        <button id="config-load-btn" class="btn btn-info"><i class="fas fa-upload"></i> Carregar Backup</button>
+                        <input type="file" id="file-input" accept=".json" style="display: none;">
+                    </div>
+                </div>
+                <div class="setting-item">
+                     <div>
+                        <h3>Gerenciamento de Dados</h3>
+                        <p>Apague todos os seus registros de uma só vez (ação irreversível).</p>
+                    </div>
+                    <button id="config-delete-all-btn" class="btn btn-danger"><i class="fas fa-trash"></i> Apagar Tudo</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+</body>
+</html>
