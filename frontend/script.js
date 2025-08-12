@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => { // ALTERAÇÃO: Adic
     let chartInstance = null;
     
     // --- Constantes da API ---
-    const API_URL = 'http://127.0.0.1:5000/api'; // NOVO: URL base do nosso backend
+    const API_URL = 'http://127.0.0.1:5000/api'; 
 
     // --- Referências do DOM ---
     const pages = document.querySelectorAll('.page');
@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => { // ALTERAÇÃO: Adic
     const dataInput = document.getElementById('data');
 
     // --- Funções de Persistência com a API ---
-
-    // REMOVIDO: const saveDataToLocalStorage = () => { ... };
 
     // ALTERAÇÃO: Função para carregar dados do SERVIDOR
     const loadDataFromServer = async () => {
@@ -28,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => { // ALTERAÇÃO: Adic
         }
     };
 
-    // MANTIDO: As configurações continuam no LocalStorage por simplicidade
     const loadSettings = () => {
         const savedSettings = JSON.parse(localStorage.getItem('horasProSettings'));
         if (savedSettings) {
